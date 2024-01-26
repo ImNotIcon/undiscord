@@ -127,7 +127,7 @@
 [name^="grab-"] { position: absolute; --size: 6px; --corner-size: 16px; --offset: -1px; z-index: 9; }
 [name^="grab-"]:hover{ background: rgba(128,128,128,0.1); }
 [name="grab-t"] { top: 0px; left: var(--corner-size); right: var(--corner-size); height: var(--size); margin-top: var(--offset); cursor: ns-resize; }
-[name="grab-r"] { top: var(--corner-size); bottom: var(--corner-size); right: 0px; width: var(--size); margin-right: var(--offset); 
+[name="grab-r"] { top: var(--corner-size); bottom: var(--corner-size); right: 0px; width: var(--size); margin-right: var(--offset);
   cursor: ew-resize; }
 [name="grab-b"] { bottom: 0px; left: var(--corner-size); right: var(--corner-size); height: var(--size); margin-bottom: var(--offset); cursor: ns-resize; }
 [name="grab-l"] { top: var(--corner-size); bottom: var(--corner-size); left: 0px; width: var(--size); margin-left: var(--offset); cursor: ew-resize; }
@@ -556,7 +556,7 @@
 	        ...job, // override with options for that job
 	      };
 	      if (this.options.guildId !== '@me' && !this.options.includeServers) {
-			log.verb(`Skipping the channel ${this.options.channelId} as it's a server channel.`);
+		log.verb(`Skipping the channel ${this.options.channelId} as it's a server channel.`);
 	      } else {
 	        await this.run(true);
 	        if (!this.state.running) break;
@@ -711,9 +711,35 @@
 
 	  async search() {
 	    let API_SEARCH_URL;
-	    if (this.options.guildId === '@me') API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
-	    else API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
+		if (!this.options.guildId) {
+			const CHANNEL_INFO_URL = `https://discord.com/api/v9/channels/${this.options.channelId}`;
+			let channelInfo;
+			try {
+				await this.beforeRequest();
+				channelInfo = await fetch(CHANNEL_INFO_URL, {
+					headers: {
+						'Authorization': this.options.authToken,
+					}
+				});
+				channelInfo = await channelInfo.json();
+			} catch (error) {
+				console.error('Failed to fetch channel info:', error);
+				return;
+			}
+			this.options.guildId = channelInfo.guild_id;
 
+			if (channelInfo.type === 1) {
+				API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
+			} else if (channelInfo.type === 0 && this.options.guildId) {
+				API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
+			} else {
+				console.error('Unknown channel type:', channelInfo.type);
+				return;
+			}
+		} else {
+			if (this.options.guildId === '@me') API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
+			else API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
+		}
 	    let resp;
 	    try {
 	      await this.beforeRequest();
@@ -1557,14 +1583,14 @@ body.undiscord-pick-message.after [id^="message-content-"]:hover::after {
 	  //advanced
 	  const searchDelay = parseInt($('input#searchDelay').value.trim());
 	  const deleteDelay = parseInt($('input#deleteDelay').value.trim());
-	 
+
 	  // token
 	  const authToken = $('input#token').value.trim() || fillToken();
 	  if (!authToken) return; // get token already logs an error.
-	  
+
 	  // validate input
-	  if (!guildId) return log.error('You must fill the "Server ID" field!');
-	 
+	  // if (!guildId) return log.error('You must fill the "Server ID" field!');
+
 	  // clear logArea
 	  ui.logArea.innerHTML = '';
 
