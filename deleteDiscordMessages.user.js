@@ -556,7 +556,7 @@
 	        ...job, // override with options for that job
 	      };
 	      if (this.options.guildId !== '@me' && !this.options.includeServers) {
-		log.verb(`Skipping the channel ${this.options.channelId} as it's a server channel.`);
+			log.verb(`Skipping the channel ${this.options.channelId} as it's a server channel.`);
 	      } else {
 	        await this.run(true);
 	        if (!this.state.running) break;
@@ -711,35 +711,9 @@
 
 	  async search() {
 	    let API_SEARCH_URL;
-		if (!this.options.guildId) {
-			const CHANNEL_INFO_URL = `https://discord.com/api/v9/channels/${this.options.channelId}`;
-			let channelInfo;
-			try {
-				await this.beforeRequest();
-				channelInfo = await fetch(CHANNEL_INFO_URL, {
-					headers: {
-						'Authorization': this.options.authToken,
-					}
-				});
-				channelInfo = await channelInfo.json();
-			} catch (error) {
-				console.error('Failed to fetch channel info:', error);
-				return;
-			}
-			this.options.guildId = channelInfo.guild_id;
-			
-			if (channelInfo.type === 1) {
-				API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
-			} else if (channelInfo.type === 0 && this.options.guildId) {
-				API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
-			} else {
-				console.error('Unknown channel type:', channelInfo.type);
-				return;
-			}
-		} else {
-			if (this.options.guildId === '@me') API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
-			else API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
-		}
+	    if (this.options.guildId === '@me') API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
+	    else API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
+
 	    let resp;
 	    try {
 	      await this.beforeRequest();
@@ -1588,10 +1562,8 @@ body.undiscord-pick-message.after [id^="message-content-"]:hover::after {
 	  const authToken = $('input#token').value.trim() || fillToken();
 	  if (!authToken) return; // get token already logs an error.
 	  
-	  // validate input 
-	  // not required anymore as it automatically checks whether its a server
-	  // or a channel.
-	  // if (!guildId) return log.error('You must fill the "Server ID" field!');
+	  // validate input
+	  if (!guildId) return log.error('You must fill the "Server ID" field!');
 	 
 	  // clear logArea
 	  ui.logArea.innerHTML = '';
