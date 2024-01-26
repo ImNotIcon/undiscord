@@ -556,7 +556,7 @@
 	        ...job, // override with options for that job
 	      };
 	      if (this.options.guildId !== '@me' && !this.options.includeServers) {
-			log.verb(`Skipping the channel ${this.options.channelId} as it's a server channel.`); 
+		log.verb(`Skipping the channel ${this.options.channelId} as it's a server channel.`); 
 	      } else {
 	        await this.run(true);
 	        if (!this.state.running) break;
