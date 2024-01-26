@@ -740,7 +740,7 @@
 			if (this.options.guildId === '@me') API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
 			else API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
 		}
-		let resp;
+	    let resp;
 	    try {
 	      await this.beforeRequest();
 	      resp = await fetch(API_SEARCH_URL + 'search?' + queryString([
