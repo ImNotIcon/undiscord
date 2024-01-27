@@ -723,17 +723,17 @@
 	        });
 	        channelInfo = await channelInfo.json();
 	      } catch (error) {
-	        console.error('Failed to fetch channel info:', error);
+	        log.error('Failed to fetch channel info:', error);
 	        return;
 	      }
 	      this.options.guildId = channelInfo.guild_id;
-
+	
 	      if (channelInfo.type === 1 || channelInfo.type === 3) {
-	        API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DN
+	        API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DN || Group DM
 	      } else if (channelInfo.type === 0 && this.options.guildId) {
 	        API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
 	      } else {
-	        console.error('Unknown channel type:', channelInfo.type);
+	        log.error('Unknown or unsupported channel type:', channelInfo.type);
 	        return;
 	      }
 	    } else {
