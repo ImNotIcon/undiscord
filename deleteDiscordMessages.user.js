@@ -711,35 +711,35 @@
 
 	  async search() {
 	    let API_SEARCH_URL;
-		if (!this.options.guildId) {
-			const CHANNEL_INFO_URL = `https://discord.com/api/v9/channels/${this.options.channelId}`;
-			let channelInfo;
-			try {
-				await this.beforeRequest();
-				channelInfo = await fetch(CHANNEL_INFO_URL, {
-					headers: {
-						'Authorization': this.options.authToken,
-					}
-				});
-				channelInfo = await channelInfo.json();
-			} catch (error) {
-				console.error('Failed to fetch channel info:', error);
-				return;
-			}
-			this.options.guildId = channelInfo.guild_id;
+	    if (!this.options.guildId) {
+	      const CHANNEL_INFO_URL = `https://discord.com/api/v9/channels/${this.options.channelId}`;
+	      let channelInfo;
+	      try {
+	        await this.beforeRequest();
+	        channelInfo = await fetch(CHANNEL_INFO_URL, {
+	        headers: {
+	          'Authorization': this.options.authToken,
+	           }
+	        });
+	        channelInfo = await channelInfo.json();
+	      } catch (error) {
+	        console.error('Failed to fetch channel info:', error);
+	        return;
+	      }
+	      this.options.guildId = channelInfo.guild_id;
 
-			if (channelInfo.type === 1) {
-				API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
-			} else if (channelInfo.type === 0 && this.options.guildId) {
-				API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
-			} else {
-				console.error('Unknown channel type:', channelInfo.type);
-				return;
-			}
-		} else {
-			if (this.options.guildId === '@me') API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
-			else API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
-		}
+	      if (channelInfo.type === 1 || channelInfo.type === 3) {
+	        API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DN
+	      } else if (channelInfo.type === 0 && this.options.guildId) {
+	        API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
+	      } else {
+	        console.error('Unknown channel type:', channelInfo.type);
+	        return;
+	      }
+	    } else {
+	      if (this.options.guildId === '@me') API_SEARCH_URL = `https://discord.com/api/v9/channels/${this.options.channelId}/messages/`; // DMs
+	      else API_SEARCH_URL = `https://discord.com/api/v9/guilds/${this.options.guildId}/messages/`; // Server
+	    }
 	    let resp;
 	    try {
 	      await this.beforeRequest();
