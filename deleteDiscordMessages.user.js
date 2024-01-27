@@ -722,6 +722,7 @@
 	           }
 	        });
 	        channelInfo = await channelInfo.json();
+	        this.afterRequest();
 	      } catch (error) {
 	        log.error('Failed to fetch channel info:', error);
 	        return;
